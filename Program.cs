@@ -40,8 +40,8 @@ namespace AdventOfCode
 
                 // Password meets policy logic
 
-                /* Each policy actually describes two positions in the password, where 1 means the first character, 
-                2 means the second character, and so on. (Be careful; Toboggan Corporate Policies have no concept of "index zero"!) 
+                /* Each policy actually describes two positions in the password, where 1 means the first character,
+                2 means the second character, and so on. (Be careful; Toboggan Corporate Policies have no concept of "index zero"!)
                 Exactly one of these positions must contain the given letter. */
 
                 // Modify pOne and pTwo to account for 1 index in policy
@@ -50,11 +50,10 @@ namespace AdventOfCode
 
                 Console.WriteLine(item);
 
-
                 // test if exactly one of these positions contain the given letter
-                if (password[pOne] == reqLetter ^ password[pTwo] == reqLetter )
+                if (password[pOne] == reqLetter ^ password[pTwo] == reqLetter)
                 {
-                    // if yes, record violation   
+                    // if yes, record violation
                     Console.WriteLine($"Pass - letter: {reqLetter} Password: {password}");
                     passes++;
                 }
@@ -96,7 +95,7 @@ namespace AdventOfCode
                 // Console.WriteLine($"password: [{password}]");
 
                 // Password meets policy logic
-                // The password policy indicates the lowest and highest number of times 
+                // The password policy indicates the lowest and highest number of times
                 // a given letter must appear for the password to be valid
 
                 // Count number of reqLetters
@@ -107,11 +106,10 @@ namespace AdventOfCode
                 // test if under min or over max
                 if (lettersFound < minFreq)
                 {
-                    // if yes, record violation   
+                    // if yes, record violation
                     Console.WriteLine($"MinF {lettersFound} < {minFreq} Letter: {reqLetter} Password: {password}");
                     violations++;
                 }
-
                 else if (lettersFound > maxFreq)
                 {
                     Console.WriteLine($"MaxF {lettersFound} > {maxFreq} Letter: {reqLetter} Password: {password}");
@@ -127,6 +125,7 @@ namespace AdventOfCode
             Console.WriteLine($"Number of Violations: {violations}/{PasswordPolicy.Length}");
             Console.WriteLine($"Number of Passes: {passes}/{PasswordPolicy.Length}");
         }
+
         /// <summary>
         /// Read input data from .\input data\ dir into an array of strings
         /// </summary>
@@ -137,6 +136,7 @@ namespace AdventOfCode
             string fullpath = @"C:\Users\dlardo\Nextcloud\Documents\github.com\dlardo\AdventOfCode\input data\" + filename;
             return System.IO.File.ReadAllLines(fullpath);
         }
+
         /// <summary>
         /// Get the string that exists between two other strings
         /// </summary>
