@@ -6,7 +6,7 @@ namespace AdventOfCode
     {
         private static void Main(string[] args)
         {
-            Day2b();
+            Day2a();
         }
 
         // https://adventofcode.com/2020/day/2#part2
@@ -135,7 +135,7 @@ namespace AdventOfCode
             string FinalString;
             int Pos1 = STR.IndexOf(FirstString) + FirstString.Length;
             int Pos2 = STR.IndexOf(LastString);
-            FinalString = STR.Substring(Pos1, Pos2 - Pos1);
+            FinalString = STR[Pos1..Pos2];
             return FinalString;
         }
 
