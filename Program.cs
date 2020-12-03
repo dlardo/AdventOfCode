@@ -6,11 +6,67 @@ namespace AdventOfCode
     {
         private static void Main(string[] args)
         {
-            Day2();
+            Day2b();
+        }
+
+        // https://adventofcode.com/2020/day/2#part2
+        private static void Day2b()
+        {
+            string[] examplePasswordPolicy = { "1-3 a: abcde", "1-3 b: cdefg", "2-9 c: ccccccccc" };
+            string[] PasswordPolicy = ReadInputData("day2.txt");
+
+            int violations = 0;
+            int passes = 0;
+
+            foreach (var item in PasswordPolicy)
+            {
+                // Pull out interesting values
+                int dashPos = item.IndexOf("-");
+                int pOne = Convert.ToInt32(item.Substring(0, dashPos));
+                // Console.WriteLine($"pOne: [{pOne}]");
+
+                int pTwo = Convert.ToInt32(Between(item, "-", " "));
+                // Console.WriteLine($"pTwo: [{pTwo}]");
+
+                char reqLetter = Convert.ToChar(Between(item, " ", ":"));
+                // Console.WriteLine($"reqLetter: [{reqLetter}]");
+
+                string password = item.Substring(item.IndexOf(": ") + 2);
+                // Console.WriteLine($"password: [{password}]");
+
+                // Password meets policy logic
+
+                /* Each policy actually describes two positions in the password, where 1 means the first character, 
+                2 means the second character, and so on. (Be careful; Toboggan Corporate Policies have no concept of "index zero"!) 
+                Exactly one of these positions must contain the given letter. */
+
+                // Modify pOne and pTwo to account for 1 index in policy
+                pOne--;
+                pTwo--;
+
+                Console.WriteLine(item);
+
+
+                // test if exactly one of these positions contain the given letter
+                if (password[pOne] == reqLetter ^ password[pTwo] == reqLetter )
+                {
+                    // if yes, record violation   
+                    Console.WriteLine($"Pass - letter: {reqLetter} Password: {password}");
+                    passes++;
+                }
+                else
+                {
+                    Console.WriteLine($"Fail - letter: {reqLetter} Password: {password}");
+                    violations++;
+                }
+            }
+
+            Console.WriteLine($"Number of Violations: {violations}/{PasswordPolicy.Length}");
+            Console.WriteLine($"Number of Passes: {passes}/{PasswordPolicy.Length}");
         }
 
         // https://adventofcode.com/2020/day/2
-        private static void Day2()
+        private static void Day2a()
         {
             string[] examplePasswordPolicy = { "1-3 a: abcde", "1-3 b: cdefg", "2-9 c: ccccccccc" };
             string[] PasswordPolicy = ReadInputData("day2.txt");
@@ -23,10 +79,10 @@ namespace AdventOfCode
                 // Pull out interesting values
                 int dashPos = item.IndexOf("-");
                 int minFreq = Convert.ToInt32(item.Substring(0, dashPos));
-                // Console.WriteLine($"minFreq: [{minFreq}]");
+                // Console.WriteLine($"pOne: [{pOne}]");
 
                 int maxFreq = Convert.ToInt32(Between(item, "-", " "));
-                // Console.WriteLine($"maxFreq: [{maxFreq}]");
+                // Console.WriteLine($"pTwo: [{pTwo}]");
 
                 string reqLetter = Between(item, " ", ":");
 
