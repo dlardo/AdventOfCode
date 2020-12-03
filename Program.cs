@@ -4,6 +4,10 @@ namespace AdventOfCode
 {
     internal class Program
     {
+        /// <summary>
+        /// Main Entry Point
+        /// </summary>
+        /// <param name="args"></param>
         private static void Main(string[] args)
         {
             Day2a();
@@ -123,13 +127,23 @@ namespace AdventOfCode
             Console.WriteLine($"Number of Violations: {violations}/{PasswordPolicy.Length}");
             Console.WriteLine($"Number of Passes: {passes}/{PasswordPolicy.Length}");
         }
-
+        /// <summary>
+        /// Read input data from .\input data\ dir into an array of strings
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <returns></returns>
         private static string[] ReadInputData(string filename)
         {
             string fullpath = @"C:\Users\dlardo\Nextcloud\Documents\github.com\dlardo\AdventOfCode\input data\" + filename;
             return System.IO.File.ReadAllLines(fullpath);
         }
-
+        /// <summary>
+        /// Get the string that exists between two other strings
+        /// </summary>
+        /// <param name="STR">String to search through</param>
+        /// <param name="FirstString"></param>
+        /// <param name="LastString"></param>
+        /// <returns></returns>
         private static string Between(string STR, string FirstString, string LastString)
         {
             string FinalString;
