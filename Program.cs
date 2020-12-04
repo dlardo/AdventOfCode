@@ -10,9 +10,67 @@ namespace AdventOfCode
         /// <param name="args"></param>
         private static void Main(string[] args)
         {
-            Day2a();
+            Day3a();
         }
 
+        /// <summary>
+        /// https://adventofcode.com/2020/day/3
+        /// </summary>
+        private static void Day3a()
+        {
+            string[] exampleTreeMap = ReadInputData("day3-example.txt");
+            string[] treeMap = ReadInputData("day3.txt");
+            var map = exampleTreeMap;
+
+            // Create X,Y grid in a 2d array
+            char[,] grid = new char[map[0].Length, map.Length];
+
+            // load chars (# or .) into each slot in the 2d array
+            for (int x = 0; x < grid.GetLength(0); x++)
+            {
+                // Get the first line
+                string curr_line = map[x];
+                for (int y = 0; y < grid.GetLength(1); y++)
+                {
+                    grid[x, y] = curr_line[y];
+                    //Console.WriteLine(grid[x, y]);
+                }
+            }
+
+            /// Find open squares (.) and trees (#)
+            int trees = 0;
+            int open = 0;
+
+            // Start at 0,0. Loop with X+1, Y+3.
+            for (int x = 0; x < grid.GetLength(0); x++)
+            {
+                for (int y = 0; y < grid.GetLength(1); y += 3)
+                {
+                    if (grid[x,y].Equals('#'))
+                    {
+                        trees++;
+                    }
+                    else if (grid[x, y].Equals('.')) 
+                    {
+                        open++;
+                    }
+                    else
+                    {
+                        Console.WriteLine("You screwed up.");
+                    }
+                    break; // issue: breaking causes Y = 0. We need to preserve our Y pos.
+                    // essentially we need to increment X and Y at the same time.
+                    // options: track the Y+=3 manually. I.e, No for loop for y.
+                    // more options? Bed time.
+                }
+            }
+
+            Console.WriteLine($"# of Trees: {trees}");
+            Console.WriteLine($"# of Open : {open}");
+
+        }
+
+        
         // https://adventofcode.com/2020/day/2#part2
         private static void Day2b()
         {
