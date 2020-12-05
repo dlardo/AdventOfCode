@@ -10,9 +10,87 @@ namespace AdventOfCode
         /// <param name="args"></param>
         private static void Main(string[] args)
         {
-            Day3a();
+            Day3b();
         }
 
+        /// <summary>
+        /// https://adventofcode.com/2020/day/3
+        /// </summary>
+        private static void Day3b()
+        {
+            string[] exampleTreeMap = ReadInputData("day3-example.txt");
+            string[] treeMap = ReadInputData("day3.txt");
+            var map = treeMap;
+
+            // Create X,Y grid in a 2d array
+            char[,] grid = new char[map[0].Length, map.Length];
+
+            // load chars (# or .) into each slot in the 2d array
+            for (int y = 0; y < grid.GetLength(1); y++)
+            {
+                string curr_line = map[y];
+                for (int x = 0; x < curr_line.Length; x++)
+                {
+                    grid[x, y] = curr_line[x];
+                }
+            }
+
+            uint[] treeResults = new uint[5];
+            treeResults[0] = (uint)FindTrees(grid, 1, 1);
+            treeResults[1] = (uint)FindTrees(grid, 3, 1);
+            treeResults[2] = (uint)FindTrees(grid, 5, 1);
+            treeResults[3] = (uint)FindTrees(grid, 7, 1);
+            treeResults[4] = (uint)FindTrees(grid, 1, 2);
+
+            static int FindTrees(char[,] grid, int slopeX, int slopeY)
+            {
+                /// Find open squares (.) and trees (#)
+                int finalTrees = 0;
+                int open = 0;
+
+                // Start at 0,0. Loop with X+3, Y+1.
+                int _x = 0;
+                for (int y = 0; y < grid.GetLength(1); y += slopeY)
+                {
+                    if (y >= grid.GetLength(1))
+                    {
+                        break;
+                    }
+
+                    if (_x >= grid.GetLength(0))
+                    {
+                        // if we would have attempted to get a X coord that is outside the data range,
+                        // reset the X to where it would be as if the range infinitley repeated.
+                        _x -= grid.GetLength(0);
+                    }
+
+                    // Console.Write($"{_x},{y}");
+                    if (grid[_x, y].Equals('#'))
+                    {
+                        // Console.WriteLine(" #");
+                        finalTrees++;
+                    }
+                    else if (grid[_x, y].Equals('.'))
+                    {
+                        // Console.WriteLine(" .");
+                        open++;
+                    }
+                    else
+                    {
+                        Console.WriteLine($"? [{grid[_x, y]}]");
+                    }
+                    _x += slopeX;
+                }
+                Console.WriteLine($"Slope: {slopeX}/{slopeY} Trees: {finalTrees}");
+                //Console.WriteLine($"# of Trees: {finalTrees}");
+                //Console.WriteLine($"# of Open : {open}");
+
+                return finalTrees;
+            }
+
+            uint solution = treeResults[0] * treeResults[1] * treeResults[2] * treeResults[3] * treeResults[4];
+            Console.WriteLine(solution.ToString());
+        }
         /// <summary>
         /// https://adventofcode.com/2020/day/3
         /// </summary>
