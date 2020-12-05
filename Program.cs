@@ -26,13 +26,12 @@ namespace AdventOfCode
             char[,] grid = new char[map[0].Length, map.Length];
 
             // load chars (# or .) into each slot in the 2d array
-            for (int x = 0; x < grid.GetLength(0); x++)
+            for (int y = 0; y < grid.GetLength(1) - 1; y++)
             {
-                // Get the first line
-                string curr_line = map[x];
-                for (int y = 0; y < grid.GetLength(1); y++)
+                string curr_line = map[y];
+                for (int x = 0; x < curr_line.Length - 1 ; x++)
                 {
-                    grid[x, y] = curr_line[y];
+                    grid[x, y] = curr_line[x];
                     //Console.WriteLine(grid[x, y]);
                 }
             }
@@ -41,28 +40,33 @@ namespace AdventOfCode
             int trees = 0;
             int open = 0;
 
-            // Start at 0,0. Loop with X+1, Y+3.
-            for (int x = 0; x < grid.GetLength(0); x++)
+            // Start at 0,0. Loop with X+3, Y+1.
+            int _x = 0;
+            for (int y = 0; y < grid.GetLength(1); y++)
             {
-                for (int y = 0; y < grid.GetLength(1); y += 3)
+                if (_x >= grid.GetLength(0) - 1)
                 {
-                    if (grid[x,y].Equals('#'))
-                    {
-                        trees++;
-                    }
-                    else if (grid[x, y].Equals('.')) 
-                    {
-                        open++;
-                    }
-                    else
-                    {
-                        Console.WriteLine("You screwed up.");
-                    }
-                    break; // issue: breaking causes Y = 0. We need to preserve our Y pos.
-                    // essentially we need to increment X and Y at the same time.
-                    // options: track the Y+=3 manually. I.e, No for loop for y.
-                    // more options? Bed time.
+                    // if we would have attempted to get a X coord that is outside the data range,
+                    // reset the X to where it would be as if the range infinitley repeated.
+                    _x -= grid.GetLength(0) - 1;
                 }
+
+                Console.Write($"{_x},{y}");
+                if (grid[_x, y].Equals('#'))
+                {
+                    Console.WriteLine(" #");
+                    trees++;
+                }
+                else if (grid[_x, y].Equals('.'))
+                {
+                    Console.WriteLine(" .");
+                    open++;
+                }
+                else
+                {
+                    Console.WriteLine($"? [{grid[_x, y]}]");
+                }
+                _x += 3;
             }
 
             Console.WriteLine($"# of Trees: {trees}");
