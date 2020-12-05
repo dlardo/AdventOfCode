@@ -20,16 +20,16 @@ namespace AdventOfCode
         {
             string[] exampleTreeMap = ReadInputData("day3-example.txt");
             string[] treeMap = ReadInputData("day3.txt");
-            var map = exampleTreeMap;
+            var map = treeMap;
 
             // Create X,Y grid in a 2d array
             char[,] grid = new char[map[0].Length, map.Length];
 
             // load chars (# or .) into each slot in the 2d array
-            for (int y = 0; y < grid.GetLength(1) - 1; y++)
+            for (int y = 0; y < grid.GetLength(1); y++)
             {
                 string curr_line = map[y];
-                for (int x = 0; x < curr_line.Length - 1 ; x++)
+                for (int x = 0; x < curr_line.Length; x++)
                 {
                     grid[x, y] = curr_line[x];
                     //Console.WriteLine(grid[x, y]);
@@ -44,11 +44,11 @@ namespace AdventOfCode
             int _x = 0;
             for (int y = 0; y < grid.GetLength(1); y++)
             {
-                if (_x >= grid.GetLength(0) - 1)
+                if (_x >= grid.GetLength(0))
                 {
                     // if we would have attempted to get a X coord that is outside the data range,
                     // reset the X to where it would be as if the range infinitley repeated.
-                    _x -= grid.GetLength(0) - 1;
+                    _x -= grid.GetLength(0);
                 }
 
                 Console.Write($"{_x},{y}");
