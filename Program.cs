@@ -32,11 +32,11 @@ namespace AdventOfCode
 
             string[] examplePassportList = ReadInputData("day4-example.txt");
             string[] fullPassportList = ReadInputData("day4.txt");
-            var passportList = examplePassportList;
+            var passportList = fullPassportList;
             var passportDictList = new List<Dictionary<string, string>> { };
 
             /*
-            ecl:gry pid:860033327 eyr:2020 hcl:#fffffd 
+            ecl:gry pid:860033327 eyr:2020 hcl:#fffffd
             byr:1937 iyr:2017 cid:147 hgt:183cm
 
             iyr:2013 ecl:amb cid:350 eyr:2023 pid:028048884
@@ -52,7 +52,7 @@ namespace AdventOfCode
             */
 
             var passport = new Dictionary<string, string>();
-                  
+
             foreach (var line in passportList)
             {
                 bool endOfLine = false;
@@ -69,7 +69,7 @@ namespace AdventOfCode
                     {
                         // Capture the entire passport into the master list
                         passportDictList.Add(passport);
-                        
+
                         // Get a fresh new passport
                         passport = new Dictionary<string, string>();
                         // Skip finding any K,V's on this line
@@ -92,10 +92,10 @@ namespace AdventOfCode
                         // Grab up until the next space
                         pGrabSpaceEnd = pSpace;
                     }
-                   
+
                     // Grab from the start to the :
                     string key = line[pGrabColonStart..pColon];
-                    
+
                     // Grab from after the : to the " " || the EOL
                     string value = line[(pColon + 1)..pGrabSpaceEnd];
 
@@ -107,25 +107,79 @@ namespace AdventOfCode
                     passport.Add(key, value);
                 }
             }
-            
+
             // capture the last passport
             passportDictList.Add(passport);
 
             Console.WriteLine($"You have {passportDictList.Count} passports.");
 
-            // Check for required fields
-            /*
-            byr(Birth Year)
-            iyr(Issue Year)
-            eyr(Expiration Year)
-            hgt(Height)
-            hcl(Hair Color)
-            ecl(Eye Color)
-            pid(Passport ID)
-            cid(Country ID) - optional
-            */
+            // Check for required keys
+            var requiredKeys = new Dictionary<string, string> {
+                { "byr", "Birth Year" },
+                { "iyr", "Issue Year" },
+                { "eyr", "Expiration Year" },
+                { "hgt", "Height" },
+                { "hcl", "Hair Color" },
+                { "ecl", "Eye Color" },
+                { "pid", "Passport ID" },
+            };
 
+            // Check for optional keys
+            var optionalKeys = new Dictionary<string, string> {
+                { "cid", "Country ID" }
+            };
 
+            // Check for both optional and required keys
+            var requiredAndOptionalKeys = new Dictionary<string, string> { };
+            foreach (var item in requiredKeys)
+            {
+                requiredAndOptionalKeys.Add(item.Key, item.Value);
+            }
+            foreach (var item in optionalKeys)
+            {
+                requiredAndOptionalKeys.Add(item.Key, item.Value);
+            }
+
+            // Validate all passports
+            int validPassports = 0;
+            foreach (var currPassport in passportDictList)
+            {
+                if (CompareDictionaryKeys(currPassport, requiredKeys))
+                {
+                    validPassports++;
+                }
+                else if (CompareDictionaryKeys(currPassport, requiredAndOptionalKeys))
+                {
+                    validPassports++;
+                }
+            }
+
+            Console.WriteLine($"There are {validPassports} valid passports");
+        }
+
+        private static bool CompareDictionaryKeys(Dictionary<string, string> dict1, Dictionary<string, string> dict2)
+        {
+            // I tried to find a more elegant way but gave up after a half hour of searching
+            // dictionary1.Keys.SequenceEqual(dictionary2.Keys) might work but after reading the doc it
+            // doesn't seem like it would as it requires the pointers to be the same
+
+            foreach (var dict1Key in dict1.Keys)
+            {
+                if (!dict2.ContainsKey(dict1Key))
+                {
+                    return false;
+                }
+            }
+
+            foreach (var dict2Key in dict2.Keys)
+            {
+                if (!dict1.ContainsKey(dict2Key))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -206,6 +260,7 @@ namespace AdventOfCode
             uint solution = treeResults[0] * treeResults[1] * treeResults[2] * treeResults[3] * treeResults[4];
             Console.WriteLine(solution.ToString());
         }
+
         /// <summary>
         /// https://adventofcode.com/2020/day/3
         /// </summary>
@@ -264,10 +319,8 @@ namespace AdventOfCode
 
             Console.WriteLine($"# of Trees: {trees}");
             Console.WriteLine($"# of Open : {open}");
-
         }
 
-        
         // https://adventofcode.com/2020/day/2#part2
         private static void Day2b()
         {
@@ -299,8 +352,8 @@ namespace AdventOfCode
                 2 means the second character, and so on. (Be careful; Toboggan Corporate Policies have no concept of "index zero"!)
                 Exactly one of these positions must contain the given letter. */
 
-            // Modify pOne and pTwo to account for 1 index in policy
-            pOne--;
+                // Modify pOne and pTwo to account for 1 index in policy
+                pOne--;
                 pTwo--;
 
                 Console.WriteLine(item);
