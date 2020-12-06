@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace AdventOfCode
 {
@@ -10,7 +11,121 @@ namespace AdventOfCode
         /// <param name="args"></param>
         private static void Main(string[] args)
         {
-            Day3b();
+            Day4a();
+        }
+
+        /// <summary>
+        /// https://adventofcode.com/2020/day/4
+        /// </summary>
+        private static void Day4a()
+        {
+            /*
+            byr(Birth Year)
+            iyr(Issue Year)
+            eyr(Expiration Year)
+            hgt(Height)
+            hcl(Hair Color)
+            ecl(Eye Color)
+            pid(Passport ID)
+            cid(Country ID) - optional
+            */
+
+            string[] examplePassportList = ReadInputData("day4-example.txt");
+            string[] fullPassportList = ReadInputData("day4.txt");
+            var passportList = examplePassportList;
+            var passportDictList = new List<Dictionary<string, string>> { };
+
+            /*
+            ecl:gry pid:860033327 eyr:2020 hcl:#fffffd 
+            byr:1937 iyr:2017 cid:147 hgt:183cm
+
+            iyr:2013 ecl:amb cid:350 eyr:2023 pid:028048884
+            hcl:#cfa07d byr:1929
+
+            hcl:#ae17e1 iyr:2013
+            eyr:2024
+            ecl:brn pid:760753108 byr:1931
+            hgt:179cm
+
+            hcl:#cfa07d eyr:2025 pid:166559648
+            iyr:2011 ecl:brn hgt:59in
+            */
+
+            var passport = new Dictionary<string, string>();
+                  
+            foreach (var line in passportList)
+            {
+                bool endOfLine = false;
+                int pSearchStart = 0;
+                int pSearchEnd = line.Length;
+                int pGrabColonStart = 0;
+                int pGrabSpaceEnd = 0;
+
+                // loop until end of line
+                while (!endOfLine)
+                {
+                    // empty line is the end of the passport
+                    if (line == "")
+                    {
+                        // Capture the entire passport into the master list
+                        passportDictList.Add(passport);
+                        
+                        // Get a fresh new passport
+                        passport = new Dictionary<string, string>();
+                        // Skip finding any K,V's on this line
+                        break;
+                    }
+
+                    // Find positions of Colon and Space
+                    var pColon = line.IndexOf(':', pSearchStart, pSearchEnd - pSearchStart);
+                    var pSpace = line.IndexOf(" ", pSearchStart, pSearchEnd - pSearchStart);
+
+                    // If there is no space, we are at the end of the line
+                    if (pSpace == -1)
+                    {
+                        // Grab to the end of the line
+                        pGrabSpaceEnd = line.Length;
+                        endOfLine = true;
+                    }
+                    else
+                    {
+                        // Grab up until the next space
+                        pGrabSpaceEnd = pSpace;
+                    }
+                   
+                    // Grab from the start to the :
+                    string key = line[pGrabColonStart..pColon];
+                    
+                    // Grab from after the : to the " " || the EOL
+                    string value = line[(pColon + 1)..pGrabSpaceEnd];
+
+                    // Start the next search after the K,V we just found
+                    pSearchStart = pSpace + 1;
+                    pGrabColonStart = pSpace + 1;
+
+                    // Store the K,V into the passport
+                    passport.Add(key, value);
+                }
+            }
+            
+            // capture the last passport
+            passportDictList.Add(passport);
+
+            Console.WriteLine($"You have {passportDictList.Count} passports.");
+
+            // Check for required fields
+            /*
+            byr(Birth Year)
+            iyr(Issue Year)
+            eyr(Expiration Year)
+            hgt(Height)
+            hcl(Hair Color)
+            ecl(Eye Color)
+            pid(Passport ID)
+            cid(Country ID) - optional
+            */
+
+
         }
 
         /// <summary>
@@ -184,8 +299,8 @@ namespace AdventOfCode
                 2 means the second character, and so on. (Be careful; Toboggan Corporate Policies have no concept of "index zero"!)
                 Exactly one of these positions must contain the given letter. */
 
-                // Modify pOne and pTwo to account for 1 index in policy
-                pOne--;
+            // Modify pOne and pTwo to account for 1 index in policy
+            pOne--;
                 pTwo--;
 
                 Console.WriteLine(item);
