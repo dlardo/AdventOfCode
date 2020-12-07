@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace AdventOfCode
 {
@@ -11,7 +12,226 @@ namespace AdventOfCode
         /// <param name="args"></param>
         private static void Main(string[] args)
         {
-            Day4a();
+            Day4b();
+        }
+
+        /// <summary>
+        /// https://adventofcode.com/2020/day/4
+        /// </summary>
+        private static void Day4b()
+        {
+            /*
+            byr(Birth Year)
+            iyr(Issue Year)
+            eyr(Expiration Year)
+            hgt(Height)
+            hcl(Hair Color)
+            ecl(Eye Color)
+            pid(Passport ID)
+            cid(Country ID) - optional
+            */
+
+            string[] examplePassportList = ReadInputData("day4-example.txt");
+            string[] exampleInvalidPassportList = ReadInputData("day4b-invalid-passports.txt");
+            string[] exampleValidPassportList = ReadInputData("day4b-valid-passports.txt");
+            string[] fullPassportList = ReadInputData("day4.txt");
+            var passportList = fullPassportList;
+            var passportDictList = new List<Dictionary<string, string>> { };
+            var passport = new Dictionary<string, string>();
+
+            foreach (var line in passportList)
+            {
+                bool endOfLine = false;
+                int pSearchStart = 0;
+                int pSearchEnd = line.Length;
+                int pGrabColonStart = 0;
+                int pGrabSpaceEnd = 0;
+
+                // loop until end of line
+                while (!endOfLine)
+                {
+                    // empty line is the end of the passport
+                    if (line == "")
+                    {
+                        // Capture the entire passport into the master list
+                        passportDictList.Add(passport);
+
+                        // Get a fresh new passport
+                        passport = new Dictionary<string, string>();
+                        // Skip finding any K,V's on this line
+                        break;
+                    }
+
+                    // Find positions of Colon and Space
+                    var pColon = line.IndexOf(':', pSearchStart, pSearchEnd - pSearchStart);
+                    var pSpace = line.IndexOf(" ", pSearchStart, pSearchEnd - pSearchStart);
+
+                    // If there is no space, we are at the end of the line
+                    if (pSpace == -1)
+                    {
+                        // Grab to the end of the line
+                        pGrabSpaceEnd = line.Length;
+                        // Flag to stop processing this passport
+                        endOfLine = true;
+                    }
+                    else
+                    {
+                        // Grab up until the next space
+                        pGrabSpaceEnd = pSpace;
+                    }
+
+                    // Grab from the start to the :
+                    string key = line[pGrabColonStart..pColon];
+
+                    // Grab from after the : to the " " || the EOL
+                    string value = line[(pColon + 1)..pGrabSpaceEnd];
+
+                    // Start the next search after the K,V we just found
+                    pSearchStart = pSpace + 1;
+                    pGrabColonStart = pSpace + 1;
+
+                    // Store the K,V into the passport
+                    passport.Add(key, value);
+                }
+            }
+
+            // capture the last passport because there is no "" line after it.
+            passportDictList.Add(passport);
+
+            Console.WriteLine($"You have {passportDictList.Count} passports.");
+
+            // Validate all passports
+            int validPassports = 0;
+            foreach (var currPassport in passportDictList)
+            {
+                if (validatePassport(currPassport))
+                {
+                    validPassports++;
+                }
+            }
+
+            static bool validatePassport(Dictionary<string, string> passport)
+            {
+                bool validHeight = false;
+
+                // Build dict of required keys
+                var requiredKeys = new Dictionary<string, string> {
+                    { "byr", "Birth Year" },
+                    { "iyr", "Issue Year" },
+                    { "eyr", "Expiration Year" },
+                    { "hgt", "Height" },
+                    { "hcl", "Hair Color" },
+                    { "ecl", "Eye Color" },
+                    { "pid", "Passport ID" },
+                };
+
+                // Build dict of optional keys
+                var optionalKeys = new Dictionary<string, string> {
+                    { "cid", "Country ID" }
+                };
+
+                // Build dict of both optional and required keys
+                var requiredAndOptionalKeys = new Dictionary<string, string> { };
+                foreach (var item in requiredKeys)
+                {
+                    requiredAndOptionalKeys.Add(item.Key, item.Value);
+                }
+                foreach (var item in optionalKeys)
+                {
+                    requiredAndOptionalKeys.Add(item.Key, item.Value);
+                }
+
+                // Validate all required keys exist.
+                if (!(CompareDictionaryKeys(passport, requiredKeys) || CompareDictionaryKeys(passport, requiredAndOptionalKeys)))
+                {
+                    return false;
+                }
+
+                // Validate BirthYear
+                if (!(Convert.ToInt32(passport["byr"]) >= 1920 && Convert.ToInt32(passport["byr"]) <= 2002))
+                {
+                    return false;
+                }
+
+                // validate Issue year
+                if (!(Convert.ToInt32(passport["iyr"]) >= 2010 && Convert.ToInt32(passport["iyr"]) <= 2020))
+                {
+                    return false;
+                }
+
+                // validate expiration year
+                if (!(Convert.ToInt32(passport["eyr"]) >= 2020 && Convert.ToInt32(passport["eyr"]) <= 2030))
+                {
+                    return false;
+                }
+
+                // Validate Height
+                MatchCollection matches;
+
+                // centimeters
+                Regex cmRegEx = new Regex(@"(?<value>[0-9]+)cm");
+                matches = cmRegEx.Matches(passport["hgt"]);
+                if (matches.Count > 0)
+                {
+                    foreach (Match match in matches)
+                    {
+                        int height = Convert.ToInt32(match.Groups["value"].Value);
+                        if (!(height >= 150 && height <= 193))
+                        {
+                            return false;
+                        }
+                        validHeight = true;
+                    }
+                }
+
+                // inches
+                Regex cmInchesEx = new Regex(@"(?<value>[0-9]+)in");
+                matches = cmInchesEx.Matches(passport["hgt"]);
+                if (matches.Count > 0)
+                {
+                    foreach (Match match in matches)
+                    {
+                        int height = Convert.ToInt32(match.Groups["value"].Value);
+                        if (!(height >= 59 && height <= 76))
+                        {
+                            return false;
+                        }
+                        validHeight = true;
+                    }
+                }
+
+                if (!validHeight)
+                    return false;
+
+                // Validate Hair Color
+                Regex hairColorRegEx = new Regex(@"#[0-9a-f]{6}$");
+                matches = hairColorRegEx.Matches(passport["hcl"]);
+                if (matches.Count == 0)
+                {
+                    return false;
+                }
+
+                // Validate Eye Color
+                Regex EyeColorRegEx = new Regex(@"amb|blu|brn|gry|grn|hzl|oth");
+                matches = EyeColorRegEx.Matches(passport["ecl"]);
+                if (matches.Count != 1)
+                {
+                    return false;
+                }
+
+                // Validate Passport ID
+                Regex passportRegex = new Regex(@"^[0-9]{9}$");
+                matches = passportRegex.Matches(passport["pid"]);
+                if (matches.Count != 1)
+                {
+                    return false;
+                }
+
+                // Country ID is ignored
+                return true;
+            }
+
+            Console.WriteLine($"There are {validPassports} valid passports");
         }
 
         /// <summary>
@@ -161,7 +381,9 @@ namespace AdventOfCode
         {
             // I tried to find a more elegant way but gave up after a half hour of searching
             // dictionary1.Keys.SequenceEqual(dictionary2.Keys) might work but after reading the doc it
-            // doesn't seem like it would as it requires the pointers to be the same
+            // doesn't seem like it would as it requires the pointers to be the same.
+            // Also, perhaps SortedDictionary would work?
+            // Perhaps putting the keys into a set?
 
             foreach (var dict1Key in dict1.Keys)
             {
