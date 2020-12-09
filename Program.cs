@@ -12,8 +12,95 @@ namespace AdventOfCode
         /// <param name="args"></param>
         private static void Main(string[] args)
         {
-            Day4b();
+            Day5();
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private static void Day5()
+        {
+            /*
+            Here are some other boarding passes:
+
+            BFFFBBFRRR: row 70, column 7, seat ID 567.
+            FFFBBBFRRR: row 14, column 7, seat ID 119.
+            BBFFBBFRLL: row 102, column 4, seat ID 820.
+            */
+
+            string[] exampleBoardingPasses = ReadInputData("day5-example.txt");
+            var boardingPasses = exampleBoardingPasses;
+
+            Dictionary < string, Dictionary<string, int>> finalBoardingPasses = new
+                Dictionary<string, Dictionary<string, int>> { };
+
+            /*
+            {
+                "FFF": {
+                    "row: 7,
+                    "col": 119,
+                    "seat": 555
+                },
+                "BBB": {
+                    "row: 7,
+                    "col": 119,
+                    "seat": 555
+                }
+            }
+            */
+
+            // Convert B to 1, F to 0
+            // Convert R to 1, L to 0
+            foreach (var line in boardingPasses)
+            {
+                string rowBinary = new string("");
+                string colBinary = new string("");
+                Dictionary<string, int> innerDict;
+
+                foreach (var letter in line)
+                {
+                    if (letter.Equals('F'))
+                    {
+                        rowBinary = string.Concat(rowBinary, "0");
+                    }
+                    else if (letter.Equals('B')) 
+                    {
+                        rowBinary = string.Concat(rowBinary, "1");
+                    }
+                    else if (letter.Equals('R'))
+                    {
+                        colBinary = string.Concat(colBinary, "1");
+                    } 
+                    else if (letter.Equals('L'))
+                    {
+                        colBinary = string.Concat(colBinary, "0");
+                    }
+                }
+
+                // Convert Binary into integers
+                int row = Convert.ToInt32(rowBinary, 2);
+                int col = Convert.ToInt32(colBinary, 2);
+
+                innerDict = new Dictionary<string, int> { };
+                innerDict.Add("row", row);
+                innerDict.Add("col", col);
+                innerDict.Add("seat", row * 8 + col);
+                finalBoardingPasses.Add(line, innerDict);
+            }
+
+
+            Console.WriteLine($"There are {finalBoardingPasses.Count} boarding passes");
+
+            // Find highest SeatID
+            List<int> seatIds = new List<int> { };
+            foreach (KeyValuePair<string, Dictionary<string, int>> pair in finalBoardingPasses)
+            {
+                seatIds.Add(pair.Value["seat"]); 
+            }
+
+            seatIds.Sort(); // in place sort
+            Console.WriteLine($"The highest Seat is: {seatIds[seatIds.Count - 1]}");
+        }  
 
         /// <summary>
         /// https://adventofcode.com/2020/day/4
@@ -663,7 +750,7 @@ namespace AdventOfCode
         /// <returns></returns>
         private static string[] ReadInputData(string filename)
         {
-            string fullpath = @"C:\Users\dlardo\Nextcloud\Documents\github.com\dlardo\AdventOfCode\input data\" + filename;
+            string fullpath = @"C:\Users\dlardo\Documents\github.com\dlardo\AdventOfCode\input data\" + filename;
             return System.IO.File.ReadAllLines(fullpath);
         }
 
