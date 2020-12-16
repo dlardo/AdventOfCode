@@ -29,7 +29,8 @@ namespace AdventOfCode
             */
 
             string[] exampleBoardingPasses = ReadInputData("day5-example.txt");
-            var boardingPasses = exampleBoardingPasses;
+            string[] fullBoardingPasses = ReadInputData("day5.txt");
+            var boardingPasses = fullBoardingPasses;
 
             Dictionary < string, Dictionary<string, int>> finalBoardingPasses = new
                 Dictionary<string, Dictionary<string, int>> { };
@@ -100,6 +101,23 @@ namespace AdventOfCode
 
             seatIds.Sort(); // in place sort
             Console.WriteLine($"The highest Seat is: {seatIds[seatIds.Count - 1]}");
+
+            // Day 5 part 2
+            List<int> missingSeats = new List<int> { };
+            for (int i = 0; i < seatIds.Count - 1; i++)
+            {
+                if (!seatIds.Contains(i))
+                {
+                    missingSeats.Add(i);
+                }
+            }
+
+            Console.WriteLine($"Missing Seats: ");
+            foreach (var item in missingSeats)
+            {
+                Console.Write($"{item} ");
+            }
+            Console.WriteLine("");
         }  
 
         /// <summary>
